@@ -73,6 +73,7 @@ Press Enter to close
 | Oppo A54 4G         | CPH2239              | Helio G35          | MT6765         | 图形界面与命令行存在 DAA 相关问题，未完成 auth_sv5.auth 适配测试       |
 | Oppo A55 4G         | CPH2325              | Helio G35          | MT6765         | MTKClient：完整支持                                                      |
 | Oppo A55 5G         | CPHPEMM00 & PEMT00   | Dimensity 700      | MT6833         | GeekFlashTool：完整支持                                                  |
+| Oppo A93s          | PFGM00             | Dimensity 700      | MT6833            | MTKClient,GeekFlashTool: 完整支持                                                     |
 | Oppo A56 5G         | PFVM110              | Dimensity 700      | MT6833         | MTKClient：完整支持                                                      |
 | Oppo A58 4G         | CPH2577              | Helio G85          | MT6768/MT6769  | 图形界面与命令行存在 DAA 相关问题，未完成 auth_sv5.auth 适配测试       |
 | Oppo A58x           | PHJ110               | Dimensity 700      | MT6833         | GeekFlashTool：仅支持 Android 12；[O+ Support Tool]：完整支持          |
