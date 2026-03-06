@@ -15,6 +15,8 @@ class LanguageManager:
                 'en': {
                     'window_title': 'PLPatcher',
                     'src_label': 'Source file:',
+                    'output_label': 'Output filename (optional):',
+                    'output_placeholder': 'Leave empty to use source filename',
                     'browse_btn': 'Browse...',
                     'start_btn': 'Start Processing',
                     'ask_continue': 'Do you wish to continue?',
@@ -26,11 +28,13 @@ class LanguageManager:
                     'error_raw': 'RAW preloader cannot be processed',
                     'error_offset': 'Code offset > 0x2000, cannot proceed',
                     'error_exception': 'Exception occurred: {}',
-                    'author': 'Dev. Max_Goblin - 4pda',
+                    'author': 'Dev. Shocked-Cat | Hy1Fly Fork',
                 },
                 'zh': {
                     'window_title': 'PLPatcher',
                     'src_label': '源文件：',
+                    'output_label': '输出文件名（可选）：',
+                    'output_placeholder': '留空则使用源文件名',
                     'browse_btn': '浏览...',
                     'start_btn': '开始处理',
                     'ask_continue': '是否继续？',
@@ -42,7 +46,7 @@ class LanguageManager:
                     'error_raw': 'RAW格式预加载器无法处理',
                     'error_offset': '代码偏移量大于0x2000，无法处理',
                     'error_exception': '发生异常：{}',
-                    'author': 'Dev. Max_Goblin - 4pda',
+                    'author': 'Dev. Shocked-Cat | Hy1Fly Fork',
                 }
             }
         return cls._instance
@@ -65,11 +69,12 @@ class PreloaderWorker(QObject):
     error_signal = Signal(str, str)
     finished_signal = Signal()
 
-    def __init__(self, src_path):
+    def __init__(self, src_path, output_name):
         super().__init__()
         self.src_path = Path(src_path)
+        self.output_name = Path(output_name).name
         self.normal_file_size = 4 * 1024 * 1024
-        self.ndc = Path("preloader_path/boot1.bin")
+        self.ndc = Path("preloader_path") / self.output_name
         self._current_loop = None
         self._current_req_id = None
         self._ask_result = False
@@ -158,8 +163,10 @@ class PreloaderWorker(QObject):
                     return False
             if fastboot_lock_state[0] == 0x22:
                 self.log_signal.emit("lock state: 22 (lock)")
+            elif fastboot_lock_state[0] == 0x11:
+                self.log_signal.emit("lock state: 11 (hard lock)")
             else:
-                self.log_signal.emit("lock state: unlock")
+                self.log_signal.emit(f"lock state: {fastboot_lock_state[0]} (unlock)")
             return self.auto_path_preloader(flag, fastboot_lock_state, file_size)
 
     def check_validation(self):
@@ -221,9 +228,11 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle(lang.get('window_title'))
         self.resize(700, 500)
+
         central = QWidget()
         self.setCentralWidget(central)
         layout = QVBoxLayout(central)
+
         top_layout = QHBoxLayout()
         self.author_label = QLabel(lang.get('author'))
         top_layout.addWidget(self.author_label)
@@ -233,8 +242,10 @@ class MainWindow(QMainWindow):
         self.lang_combo.currentIndexChanged.connect(self.change_language)
         top_layout.addWidget(self.lang_combo)
         layout.addLayout(top_layout)
+
         file_layout = QHBoxLayout()
-        file_layout.addWidget(QLabel(lang.get('src_label')))
+        self.src_label = QLabel(lang.get('src_label'))
+        file_layout.addWidget(self.src_label)
         self.src_edit = QLineEdit()
         self.src_edit.setPlaceholderText(lang.get('src_label'))
         file_layout.addWidget(self.src_edit)
@@ -242,12 +253,23 @@ class MainWindow(QMainWindow):
         self.browse_btn.clicked.connect(self.browse_file)
         file_layout.addWidget(self.browse_btn)
         layout.addLayout(file_layout)
+
+        output_layout = QHBoxLayout()
+        self.output_label = QLabel(lang.get('output_label'))
+        output_layout.addWidget(self.output_label)
+        self.output_edit = QLineEdit()
+        self.output_edit.setPlaceholderText(lang.get('output_placeholder'))
+        output_layout.addWidget(self.output_edit)
+        layout.addLayout(output_layout)
+
         self.log_text = QTextEdit()
         self.log_text.setReadOnly(True)
         layout.addWidget(self.log_text)
+
         self.start_btn = QPushButton(lang.get('start_btn'))
         self.start_btn.clicked.connect(self.start_processing)
         layout.addWidget(self.start_btn)
+
         self.thread = None
         self.worker = None
 
@@ -255,19 +277,19 @@ class MainWindow(QMainWindow):
         lang.set_language('en' if index == 0 else 'zh')
         self.setWindowTitle(lang.get('window_title'))
         self.author_label.setText(lang.get('author'))
+        self.src_label.setText(lang.get('src_label'))
         self.src_edit.setPlaceholderText(lang.get('src_label'))
+        self.output_label.setText(lang.get('output_label'))
+        self.output_edit.setPlaceholderText(lang.get('output_placeholder'))
         self.browse_btn.setText(lang.get('browse_btn'))
         self.start_btn.setText(lang.get('start_btn'))
-        for i in range(file_layout.count()):
-            widget = file_layout.itemAt(i).widget()
-            if isinstance(widget, QLabel) and widget.text() in ['Source file:', '源文件：']:
-                widget.setText(lang.get('src_label'))
-                break
 
     def browse_file(self):
         file_path, _ = QFileDialog.getOpenFileName(self, lang.get('src_label'), "", "Binary files (*.bin);;All files (*)")
         if file_path:
             self.src_edit.setText(file_path)
+            if not self.output_edit.text().strip():
+                self.output_edit.setText(Path(file_path).name)
 
     def log(self, message):
         self.log_text.append(message)
@@ -280,16 +302,24 @@ class MainWindow(QMainWindow):
         if not Path(src).exists():
             QMessageBox.warning(self, lang.get('window_title'), lang.get('src_label') + " " + lang.get('ask_continue'))
             return
+
+        output_name = self.output_edit.text().strip()
+        if not output_name:
+            output_name = Path(src).name
+
         self.start_btn.setEnabled(False)
         self.browse_btn.setEnabled(False)
         self.log_text.clear()
+
         self.thread = QThread()
-        self.worker = PreloaderWorker(src)
+        self.worker = PreloaderWorker(src, output_name)
         self.worker.moveToThread(self.thread)
+
         self.worker.log_signal.connect(self.log)
         self.worker.error_signal.connect(self.on_error)
         self.worker.finished_signal.connect(self.on_finished)
         self.worker.ask_signal.connect(self.on_ask)
+
         self.thread.started.connect(self.worker.run)
         self.thread.start()
 
