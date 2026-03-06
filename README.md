@@ -32,6 +32,7 @@ It is impossible to fully edit RAW without verification, I don't know how to imp
 ## Example of a log of a successful patch creation
 ```
 Dev. Max_Goblin - 4pda
+Mode: Default
 boot1.bin found state: successfully
 Memory type: EMMC_BOOT
 Flag block find state: successfully
@@ -59,7 +60,7 @@ On the Russian 4pda forum, user Max_Goblin provides very detailed [instructions]
 ## Information about supported devices
 | Model              | Device code        | SoC                | SoC ID            | Status                                                                         |
 |--------------------|--------------------|--------------------|-------------------|--------------------------------------------------------------------------------|
-| Oppo A9X           | PCEM00 & PCET00.   | Helio P70          | MT6771            | MTKClient: Full support                                                        |
+| Oppo A9X           | PCEM00 & PCET00    | Helio P70          | MT6771            | MTKClient: Full support                                                        |
 | Oppo A15           | CPH2185            | Helio P35          | MT6765            | SBC enabled, but patch doesn't work                                            |
 | Oppo A17           | CPH2477            | Helio G35          | MT6765            | MTKClient: Full support                                                        |
 | Oppo A17           | CPH2477            | Helio G35          | MT6765            | MTKClient: Full support                                                        |
@@ -74,7 +75,7 @@ On the Russian 4pda forum, user Max_Goblin provides very detailed [instructions]
 | Oppo A58x          | PHJ110             | Dimensity 700      | MT6833            | GeekFlashTool: only 12 Android support; [O+ Support Tool]: Full support        |
 | Oppo A73 5G        | CPH2161            | Dimensity 720      | MT6853            | MTKClient GUI  support, to work without GUI, auth_sv5.auth is required.        |
 | Oppo A93s          | PFGM00             | Dimensity 700      | MT6833            | MTKClient: Full support                                                        |
-| OPPO F31 Pro 5G    | CPH2763            | Dimensity 7300     | MT6878            | [O+ Support Tool]: support; The patch didn't work for unknown reasons.         |
+| OPPO F31 Pro 5G    | CPH2763            | Dimensity 7300     | MT6878            | [O+ Support Tool]: support; Patch didn't work due to android 15+               |
 | Oppo K9 Pro        | PEYM00             | Dimensity 1200     | MT6893            | GeekFlashTool: Full support                                                    |
 | Oppo Pad 2         | OPD2201            | Dimensity 9000     | MT6983            | GeekFlashTool: Full support                                                    |
 | Oppo Reno 10 5g    | CPH2531            | Dimensity 7050     | MT6877V           | Problems DAA gui and cmd, auth_sv5.auth not tested                             |
@@ -83,8 +84,11 @@ On the Russian 4pda forum, user Max_Goblin provides very detailed [instructions]
 | Oppo Reno 4 Lite   | CPH2125            | Helio P95          | MT6779            | MTKClient: Full support                                                        |
 | Oppo Reno 5 Lite   | CPH2205            | Helio P95          | MT6779            | MTKClient: Full support                                                        |
 | Oppo Reno 5 Z      | CPH2211            | Dimensity 800U     | MT6853            | MTKClient + [DA](https://archive.diablosat.cc/firmwares/amt-dumps/Oppo_Realme_Oneplus_DA/DA_BR_MT6853.bin): Full support                                                                                                                                     |
+| Oppo Reno 6 5G     | CPH2251 & PEQM00   | Dimensity 900      | MT6877            | GeekFlashTool: Full support, mtkclient probably supports it too.               |
 | Realme 12 Plus     | RMX3867            | Dimensity 7050     | MT6877            | MTKClient + [DA MT6877](https://archive.diablosat.cc/firmwares/amt-dumps/Oppo_Realme_Oneplus_DA/): support, patch did not unlock fastboot, probably due to Android 15+, Android 14 not tested, SBC status unknown                                                      |
 | Realme GT Neo      | RMX3031            | Dimensity 1200     | MT6893            | GeekFlashTool: Full support                                                    |
+| Realme GT Neo 2T   | RMX3357 & RE5469   | Dimensity 1200     | MT6893            | GeekFlashTool: Full support                                                    |
+| Realme Q2 Pro      | RMX2173            | Dimensity 800U     | MT6853            | MTKClient + [DA](https://archive.diablosat.cc/firmwares/amt-dumps/Oppo_Realme_Oneplus_DA/DA_BR_MT6853.bin): Full support                                                    |
 | Realme V11 5G      | RMX3121 & RMX3122  | Dimensity 700      | MT6833            | GeekFlashTool: Full support                                                    |
 
 #### Ready-made preloaders are available on 4pda.
