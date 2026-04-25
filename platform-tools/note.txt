@@ -1,0 +1,4 @@
+GitHub is a code hosting platform.
+It is not very appropriate to put executable files here,
+so I do not provide Android Platform-Tools.
+download https://developer.android.google.cn/tools/releases/platform-tools
